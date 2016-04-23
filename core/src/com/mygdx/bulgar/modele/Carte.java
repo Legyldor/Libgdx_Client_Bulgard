@@ -16,6 +16,8 @@ public class Carte extends Actor {
     public Carte() {
         Texture texture = new Texture("CarteBulgard/dos.png");
         spriteCarte = new Sprite(texture, 0,0, texture.getWidth(), texture.getHeight());
+        this.setWidth(spriteCarte.getWidth()/2);
+        this.setHeight(spriteCarte.getHeight()/2);
     }
 
     public Sprite getSpriteCarte() {
@@ -23,14 +25,17 @@ public class Carte extends Actor {
     }
 
     public void setSpriteCarte(Sprite spriteCarte) {
+
         this.spriteCarte = spriteCarte;
+        this.setWidth(spriteCarte.getWidth()/2);
+        this.setHeight(spriteCarte.getHeight()/2);
     }
 
     @Override
     public void draw (Batch batch, float parentAlpha) {
         Color color = getColor();
         batch.setColor(color.r, color.g, color.b, color.a * parentAlpha);
-        batch.draw(spriteCarte, spriteCarte.getX(), spriteCarte.getY(), spriteCarte.getOriginX(), spriteCarte.getOriginY(),
-                spriteCarte.getWidth(), spriteCarte.getHeight(), spriteCarte.getScaleX(), spriteCarte.getScaleY(), spriteCarte.getRotation());
+        batch.draw(spriteCarte, super.getX(), super.getY(),super.getOriginX(), super.getOriginY(),
+                this.getWidth(), this.getHeight(), spriteCarte.getScaleX(), spriteCarte.getScaleY(), spriteCarte.getRotation());
     }
 }

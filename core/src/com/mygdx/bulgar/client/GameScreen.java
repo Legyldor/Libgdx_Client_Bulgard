@@ -1,10 +1,20 @@
 package com.mygdx.bulgar.client;
 
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.mygdx.bulgar.controleur.ClientImpl;
+import com.mygdx.bulgar.controleur.SFactoryCarte;
+import com.mygdx.bulgar.modele.Adversaire;
+import com.mygdx.bulgar.modele.Carte;
 
+import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
+
 
 /**
  * Created by Link2 on 04/02/2016.
@@ -12,21 +22,117 @@ import java.util.Observer;
 public class GameScreen extends BaseScreen implements Observer{
 
     Background background;
+    private ArrayList<Adversaire> adversaires;
+    private ArrayList<Carte> cartesMain;
+    private int indiceCartes = 0;
+    private Table tableCarteJouable = new Table(app.skin);
+    private Table tableSelectionCarte = new Table(app.skin);
+    private Table tablePiocheTas = new Table(app.skin);
+    private int NBCARTESAFFICHE = 6;
 
     public GameScreen(UiApp app, ClientImpl client) {
         super(app);
+        //Toute les cartes en main
+        this.cartesMain = new ArrayList<Carte>();
+        for(int i =1;i<=13;i++){
+            this.cartesMain.add(SFactoryCarte.getInstance().getCarte(SFactoryCarte.CARREAU, i));
+            this.cartesMain.add(SFactoryCarte.getInstance().getCarte(SFactoryCarte.COEUR, i));
+            this.cartesMain.add(SFactoryCarte.getInstance().getCarte(SFactoryCarte.TREFLE, i));
+            this.cartesMain.add(SFactoryCarte.getInstance().getCarte(SFactoryCarte.PIQUE, i));
+        }
+        //init les adversaires
+        adversaires = new ArrayList<Adversaire>();
+        for(int i =0; i<3;i++){
+            Adversaire add = new Adversaire();
+            add.setNom("Unnamed");
+            add.setNbCarte(0);
+            adversaires.add(add);
+        }
+        initUI();
+    }
 
+    public void initUI(){
+        //mainTable.setDebug(true);
         mainTable.setColor(app.skin.getColor("lt-green"));
         background = new Background("backgroundGame.png");
         app.stage.addActor(background);
-        for(int i =0;i<30; i++){
-            com.mygdx.bulgar.modele.Carte carte = new com.mygdx.bulgar.modele.Carte();
-            Sprite sprite = carte.getSpriteCarte();
-            sprite.setPosition((float)i*10 , 0);
-            carte.setSpriteCarte(sprite);
-            app.stage.addActor(carte);
+        afficherAdversaire(this.adversaires);
+        mainTable.row();
+        //tas et pioche
+        poserPioche();
+        poserTas(new Carte());
+        mainTable.add(tablePiocheTas).center().colspan(mainTable.getColumns());
+        mainTable.row();
+        Table tableCartePose = new Table(app.skin);
+        for(int i =0;i<3;i++){
+            tableCartePose.add(new Carte());
         }
+        mainTable.add(tableCartePose).center().colspan(mainTable.getColumns());
+        mainTable.row();
+        initButton();
+        mainTable.add(tableSelectionCarte).center().colspan(mainTable.getColumns());
+    }
 
+    public void initButton(){
+        Carte carte = new Carte();
+        TextButton buttonPrecedent = new TextButton("<=",app.skin);
+        buttonPrecedent.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                if (indiceCartes != 0) {
+                    indiceCartes--;
+                    creerUICartesMain();
+                }
+            }
+        });
+        tableSelectionCarte.add(buttonPrecedent).width(carte.getWidth()).height(carte.getHeight());
+        creerUICartesMain();
+        tableSelectionCarte.add(tableCarteJouable);
+        TextButton buttonSuivant = new TextButton("=>",app.skin);
+        buttonSuivant.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                if((indiceCartes+NBCARTESAFFICHE) < cartesMain.size()){
+                    indiceCartes++;
+                    creerUICartesMain();
+                }
+            }
+        });
+        tableSelectionCarte.add(buttonSuivant).width(carte.getWidth()).height(carte.getHeight());
+    }
+
+    public void creerUICartesMain(){
+        this.tableCarteJouable.clear();
+        for(int i = indiceCartes; i<(NBCARTESAFFICHE+indiceCartes);i++){
+            tableCarteJouable.add(this.cartesMain.get(i));
+        }
+    }
+
+    public void poserPioche(){
+        Carte carte = new Carte();
+        Sprite sprite = carte.getSpriteCarte();
+        carte.setSpriteCarte(sprite);
+        tablePiocheTas.add(carte).width(carte.getWidth()).height(carte.getHeight());
+    }
+
+    public void poserTas(Carte carte){
+        if(carte != null){
+            Sprite sprite = carte.getSpriteCarte();
+            carte.setSpriteCarte(sprite);
+            tablePiocheTas.add(carte).width(carte.getWidth()).height(carte.getHeight());
+        }
+    }
+
+    public void afficherAdversaire(ArrayList<Adversaire> adversaires){
+        for(int i =0; i<adversaires.size();i++){
+            Table tableAdversaire = new Table(app.skin);
+            Label labelJ = new Label(adversaires.get(i).getNom(), app.skin);
+            tableAdversaire.add(labelJ);
+            tableAdversaire.row();
+            Label labelNbCarte = new Label("cartes : "+ adversaires.get(i).getNbCarte(), app.skin);
+            tableAdversaire.add(labelNbCarte);
+            mainTable.add(tableAdversaire);
+        }
     }
 
     @Override
