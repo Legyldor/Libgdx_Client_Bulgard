@@ -1,7 +1,10 @@
 package com.mygdx.bulgar.client;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.ui.Cell;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
@@ -24,6 +27,7 @@ public class GameScreen extends BaseScreen implements Observer{
     Background background;
     private ArrayList<Adversaire> adversaires;
     private ArrayList<Carte> cartesMain;
+    private ArrayList<Carte> cartesPose;
     private int indiceCartes = 0;
     private Table tableCarteJouable = new Table(app.skin);
     private Table tableSelectionCarte = new Table(app.skin);
@@ -46,7 +50,17 @@ public class GameScreen extends BaseScreen implements Observer{
             Adversaire add = new Adversaire();
             add.setNom("Unnamed");
             add.setNbCarte(0);
+            ArrayList<Carte> cartes = new ArrayList<Carte>();
+            cartes.add(SFactoryCarte.getInstance().getCarte(SFactoryCarte.PIQUE, 1));
+            cartes.add(SFactoryCarte.getInstance().getCarte(SFactoryCarte.TREFLE, 10));
+            cartes.add(SFactoryCarte.getInstance().getCarte(SFactoryCarte.CARREAU, 7));
+            add.setCartes(cartes);
             adversaires.add(add);
+        }
+        //Init carte posé
+        cartesPose = new ArrayList<Carte>();
+        for(int i =1; i<=3;i++){
+            cartesPose.add(SFactoryCarte.getInstance().getCarte(SFactoryCarte.CARREAU,i));
         }
         initUI();
     }
@@ -59,13 +73,13 @@ public class GameScreen extends BaseScreen implements Observer{
         afficherAdversaire(this.adversaires);
         mainTable.row();
         //tas et pioche
-        poserPioche();
-        poserTas(new Carte());
+        poserPioche(0);
+        poserTas(SFactoryCarte.getInstance().getCarte(SFactoryCarte.TREFLE,12));
         mainTable.add(tablePiocheTas).center().colspan(mainTable.getColumns());
         mainTable.row();
         Table tableCartePose = new Table(app.skin);
-        for(int i =0;i<3;i++){
-            tableCartePose.add(new Carte());
+        for(int i =0;i<cartesPose.size();i++){
+            tableCartePose.add(cartesPose.get(i));
         }
         mainTable.add(tableCartePose).center().colspan(mainTable.getColumns());
         mainTable.row();
@@ -108,11 +122,9 @@ public class GameScreen extends BaseScreen implements Observer{
         }
     }
 
-    public void poserPioche(){
-        Carte carte = new Carte();
-        Sprite sprite = carte.getSpriteCarte();
-        carte.setSpriteCarte(sprite);
-        tablePiocheTas.add(carte).width(carte.getWidth()).height(carte.getHeight());
+    public void poserPioche(int nbRestant){
+        Pioche pioche = new Pioche(nbRestant, app.skin);
+        tablePiocheTas.add(pioche);
     }
 
     public void poserTas(Carte carte){
@@ -131,6 +143,16 @@ public class GameScreen extends BaseScreen implements Observer{
             tableAdversaire.row();
             Label labelNbCarte = new Label("cartes : "+ adversaires.get(i).getNbCarte(), app.skin);
             tableAdversaire.add(labelNbCarte);
+            tableAdversaire.row();
+            Table tableCarteAdversaire = new Table();
+            for(int y =0;y<adversaires.get(i).getCartes().size(); y++){
+                if(adversaires.get(i).getCartes().get(y) != null){
+                    tableCarteAdversaire.add(adversaires.get(i).getCartes().get(y))
+                            .width(adversaires.get(i).getCartes().get(y).getWidth()/2)
+                            .height(adversaires.get(i).getCartes().get(y).getHeight()/2);
+                }
+            }
+            tableAdversaire.add(tableCarteAdversaire);
             mainTable.add(tableAdversaire);
         }
     }
