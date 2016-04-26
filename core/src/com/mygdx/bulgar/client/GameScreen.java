@@ -46,7 +46,7 @@ public class GameScreen extends BaseScreen implements Observer{
         }
         //init les adversaires
         adversaires = new ArrayList<Adversaire>();
-        for(int i =0; i<3;i++){
+        for(int i =0; i<5;i++){
             Adversaire add = new Adversaire();
             add.setNom("Unnamed");
             add.setNbCarte(0);
@@ -153,7 +153,7 @@ public class GameScreen extends BaseScreen implements Observer{
                 }
             }
             tableAdversaire.add(tableCarteAdversaire);
-            mainTable.add(tableAdversaire);
+            mainTable.add(tableAdversaire).expandX();
         }
     }
 
