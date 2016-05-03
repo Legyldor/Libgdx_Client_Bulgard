@@ -16,8 +16,8 @@ public class Carte extends Actor {
     public Carte() {
         Texture texture = new Texture("CarteBulgard/dos.png");
         spriteCarte = new Sprite(texture, 0,0, texture.getWidth(), texture.getHeight());
-        this.setWidth(spriteCarte.getWidth()/2);
-        this.setHeight(spriteCarte.getHeight()/2);
+        this.setWidth(spriteCarte.getWidth());
+        this.setHeight(spriteCarte.getHeight());
     }
 
     public Sprite getSpriteCarte() {
@@ -27,8 +27,8 @@ public class Carte extends Actor {
     public void setSpriteCarte(Sprite spriteCarte) {
 
         this.spriteCarte = spriteCarte;
-        this.setWidth(spriteCarte.getWidth()/2);
-        this.setHeight(spriteCarte.getHeight()/2);
+        this.setWidth(spriteCarte.getWidth());
+        this.setHeight(spriteCarte.getHeight());
     }
 
     @Override

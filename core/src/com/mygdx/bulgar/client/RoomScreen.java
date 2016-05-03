@@ -2,6 +2,7 @@ package com.mygdx.bulgar.client;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
@@ -36,9 +37,8 @@ public class RoomScreen extends BaseScreen implements Observer{
 
     public RoomScreen(final UiApp app, final ClientImpl client) {
         super(app);
+        configUI(50);
         this.client = client;
-        mainTable.setBackground(app.skin.getDrawable("default-window"));
-        mainTable.setColor(app.skin.getColor("lt-green"));
 
         textFieldMessage = new TextField("",app.skin);
         textButtonMessage= new TextButton("Envoyer", app.skin);
@@ -79,7 +79,7 @@ public class RoomScreen extends BaseScreen implements Observer{
                             dialog.hide();
                         }
                     });
-                    dialog.add(textButton);
+                    dialog.add(textButton).height(100);
                 }
                 dialog.row();
                 TextButton textButtonClose = new TextButton("Close", app.skin);
@@ -89,7 +89,7 @@ public class RoomScreen extends BaseScreen implements Observer{
                         dialog.hide();
                     }
                 });
-                dialog.add(textButtonClose);
+                dialog.add(textButtonClose).expandX().center().colspan(dialog.getColumns()).height(100);
                 dialog.show(app.stage);
             }
         });
@@ -97,10 +97,23 @@ public class RoomScreen extends BaseScreen implements Observer{
         mainTable.add(scroll).expand().fill().colspan(4);
         mainTable.add(scrollInfo).expand().fill();
         mainTable.row().space(10).padBottom(10);
-        mainTable.add(textFieldMessage).expand().fill().colspan(4);
-        mainTable.add(textButtonMessage).expand().fill();
+        mainTable.add(textFieldMessage).expandX().fillX().colspan(4).height(100);
+        mainTable.add(textButtonMessage).expandX().fillX().height(100);
         mainTable.row();
-        mainTable.add(textButtonJouer);
+        mainTable.add(textButtonJouer).expandX().fillX().colspan(mainTable.getColumns());
+    }
+
+    private void configUI(int size){
+        Label label = new Label("",app.skin);
+        TextField textField = new TextField("", app.skin);
+        TextButton textButton = new TextButton("", app.skin);
+        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("cardigan.ttf"));
+        FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
+        parameter.size = size;
+        textField.getStyle().font = generator.generateFont(parameter);
+        label.getStyle().font = generator.generateFont(parameter);
+        textButton.getStyle().font = generator.generateFont(parameter);
+        generator.dispose();
     }
 
     @Override

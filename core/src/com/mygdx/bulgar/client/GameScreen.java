@@ -1,13 +1,13 @@
 package com.mygdx.bulgar.client;
 
-import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.ui.Cell;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.mygdx.bulgar.controleur.ClientImpl;
 import com.mygdx.bulgar.controleur.SFactoryCarte;
@@ -32,10 +32,11 @@ public class GameScreen extends BaseScreen implements Observer{
     private Table tableCarteJouable = new Table(app.skin);
     private Table tableSelectionCarte = new Table(app.skin);
     private Table tablePiocheTas = new Table(app.skin);
-    private int NBCARTESAFFICHE = 6;
+    private int NBCARTESAFFICHE = 10;
 
     public GameScreen(UiApp app, ClientImpl client) {
         super(app);
+        configUI();
         //Toute les cartes en main
         this.cartesMain = new ArrayList<Carte>();
         for(int i =1;i<=13;i++){
@@ -65,9 +66,21 @@ public class GameScreen extends BaseScreen implements Observer{
         initUI();
     }
 
+    private void configUI(){
+        Label label = new Label("",app.skin);
+        TextField textField = new TextField("", app.skin);
+        TextButton textButton = new TextButton("", app.skin);
+        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("cardigan.ttf"));
+        FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
+        parameter.size = 50;
+        textField.getStyle().font = generator.generateFont(parameter);
+        label.getStyle().font = generator.generateFont(parameter);
+        textButton.getStyle().font = generator.generateFont(parameter);
+        generator.dispose();
+    }
+
     public void initUI(){
         //mainTable.setDebug(true);
-        mainTable.setColor(app.skin.getColor("lt-green"));
         background = new Background("backgroundGame.png");
         app.stage.addActor(background);
         afficherAdversaire(this.adversaires);
@@ -148,8 +161,8 @@ public class GameScreen extends BaseScreen implements Observer{
             for(int y =0;y<adversaires.get(i).getCartes().size(); y++){
                 if(adversaires.get(i).getCartes().get(y) != null){
                     tableCarteAdversaire.add(adversaires.get(i).getCartes().get(y))
-                            .width(adversaires.get(i).getCartes().get(y).getWidth()/2)
-                            .height(adversaires.get(i).getCartes().get(y).getHeight()/2);
+                            .width((float) (adversaires.get(i).getCartes().get(y).getWidth()/(1.5)))
+                            .height((float) (adversaires.get(i).getCartes().get(y).getHeight()/(1.5)));
                 }
             }
             tableAdversaire.add(tableCarteAdversaire);
